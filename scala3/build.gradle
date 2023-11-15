@@ -1,0 +1,78 @@
+plugins {
+    id "com.diffplug.spotless" version "6.10.0"
+}
+
+apply plugin: 'scala'
+apply plugin: "com.github.maiflai.scalatest"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_15
+    targetCompatibility = JavaVersion.VERSION_15
+}
+
+test.dependsOn('scalatest')
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+ext {
+// scala
+    SCALA_VER = '3.1.3'
+    SCALA3_LIBRARY_VER = '3.1.3'
+
+    // cats
+    CATS_VER = '2.6.1'
+    CATS_SCALA_TEST_VER = '2.1.5'
+    CATS_EFFECT_VER = '2.5.1'
+
+    // ZIO
+    ZIO_VER = '1.0.9'
+
+// test scala
+    SCALA_TEST_VER = '3.2.9'
+    SCALA_MOCK_VER = '5.0.0'
+
+}
+
+dependencies {
+    implementation "org.scala-lang:scala3-library_3:${SCALA3_LIBRARY_VER}"
+
+    // Cats
+//    implementation "org.typelevel:cats-core_${SCALA_VER}:${CATS_VER}"
+//    implementation "org.typelevel:cats-free_${SCALA_VER}:${CATS_VER}"
+//    implementation "org.typelevel:cats-effect_${SCALA_VER}:${CATS_EFFECT_VER}"
+
+    // ZIO
+//    implementation "dev.zio:zio_${SCALA_VER}:${ZIO_VER}"
+
+    // testing (scala)
+//    testImplementation "org.typelevel:cats-testkit-scalatest_${SCALA_VER}:${CATS_SCALA_TEST_VER}"
+//    testImplementation "org.scalatest:scalatest_${SCALA_VER}:${SCALA_TEST_VER}"
+//    testImplementation "org.scalamock:scalamock_${SCALA_VER}:${SCALA_MOCK_VER}"
+//    testImplementation 'com.vladsch.flexmark:flexmark-all:0.36.8'
+
+}
+
+
+spotless {
+    scala {
+        // by default, all `.scala` and `.sc` files in the java sourcesets will be formatted
+
+        // version and configFile are both optional, however if version will be skipped some strange version will be used
+        scalafmt("3.0.0-RC1").configFile('.scalafmt.conf')
+
+        target project.fileTree(project.projectDir) {
+            include 'src/main/scala/**/*.scala'
+            include 'src/test/scala/**/*.scala'
+        }
+    }
+}
+
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = ["-feature",
+                                                "-deprecation",
+                                                "-unchecked"]
+}

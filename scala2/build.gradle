@@ -1,0 +1,137 @@
+plugins {
+    id "com.diffplug.spotless" version "6.10.0"
+}
+
+apply plugin: 'scala'
+apply plugin: "com.github.maiflai.scalatest"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_15
+    targetCompatibility = JavaVersion.VERSION_15
+}
+
+test.dependsOn('scalatest')
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+ext {
+// scala
+    SCALA_VER = '2.13'
+    SCALA_LIBRARY_VER = '2.13.8'
+    SCALA_XML_VER = '2.0.0'
+
+    // play json
+    PLAY_JSON_VER = '2.9.2'
+
+    // cats
+    CATS_VER = '2.6.1'
+    CATS_SCALA_TEST_VER = '2.1.5'
+    CATS_EFFECT_VER = '2.5.1'
+
+    // ZIO
+    ZIO_VER = '1.0.9'
+
+    // Monix
+    MONIX_VER = '3.4.0'
+
+    // akka
+    AKKA_VER = "2.6.14"
+
+    // DB
+    LEVELDB_VER = "0.12"
+    LEVELDBJNI_VER = "1.8"
+    POSTGRES_VER = "42.2.2"
+    CASSANDRA_VER = "1.0.5"
+
+    // Kafka
+    KAFKA_VER = '2.8.0'
+
+// logging
+    SLF4J_VER = '1.7.30'
+    LOGBACK_VER = '1.2.3'
+
+// common
+    GUAVA_VER = '30.0-jre'
+
+// test scala
+    SCALA_TEST_VER = '3.2.13'
+    SCALA_MOCK_VER = '5.0.0'
+
+// test
+    TEST_JUNIT_VER = '4.13.1'
+    TEST_MOCKITO_VER = '2.21.0'
+    TEST_ASSERTJ_VER = '3.11.0'
+    TEST_JSONASSERT_VER = '1.5.0'
+}
+
+dependencies {
+    implementation "org.scala-lang:scala-library:${SCALA_LIBRARY_VER}"
+    implementation "org.scala-lang.modules:scala-xml_${SCALA_VER}:${SCALA_XML_VER}"
+    implementation "com.typesafe.play:play-json_${SCALA_VER}:${PLAY_JSON_VER}"
+
+    // Akka
+    implementation "com.typesafe.akka:akka-stream_${SCALA_VER}:${AKKA_VER}"
+    implementation "com.typesafe.akka:akka-cluster_${SCALA_VER}:${AKKA_VER}"
+    implementation "com.typesafe.akka:akka-persistence_${SCALA_VER}:${AKKA_VER}"
+    // only to override transitive dependencies
+    implementation "com.typesafe.akka:akka-persistence-query_${SCALA_VER}:${AKKA_VER}"
+    implementation "com.typesafe.akka:akka-cluster-tools_${SCALA_VER}:${AKKA_VER}"
+
+    // Level DB
+    // local levelDB stores
+    implementation "org.iq80.leveldb:leveldb:${LEVELDB_VER}"
+    implementation "org.fusesource.leveldbjni:leveldbjni-all:${LEVELDBJNI_VER}"
+
+    // cassandra
+    implementation "com.typesafe.akka:akka-persistence-cassandra_${SCALA_VER}:${CASSANDRA_VER}"
+    testImplementation "com.typesafe.akka:akka-persistence-cassandra-launcher_${SCALA_VER}:${CASSANDRA_VER}"
+
+    // Cats
+    implementation "org.typelevel:cats-core_${SCALA_VER}:${CATS_VER}"
+    implementation "org.typelevel:cats-free_${SCALA_VER}:${CATS_VER}"
+    implementation "org.typelevel:cats-effect_${SCALA_VER}:${CATS_EFFECT_VER}"
+
+    // ZIO
+    implementation "dev.zio:zio_${SCALA_VER}:${ZIO_VER}"
+
+    // Monix
+    implementation "io.monix:monix_${SCALA_VER}:${MONIX_VER}"
+
+    // common
+    testImplementation "com.google.guava:guava:${GUAVA_VER}"
+
+    // testing (scala)
+    testImplementation "org.typelevel:cats-testkit-scalatest_${SCALA_VER}:${CATS_SCALA_TEST_VER}"
+    testImplementation "org.scalatest:scalatest_${SCALA_VER}:${SCALA_TEST_VER}"
+    testImplementation "org.scalamock:scalamock_${SCALA_VER}:${SCALA_MOCK_VER}"
+    testRuntimeOnly 'com.vladsch.flexmark:flexmark-profile-pegdown:0.62.2'
+
+    testImplementation "junit:junit:${TEST_JUNIT_VER}"
+    testImplementation "org.mockito:mockito-core:${TEST_MOCKITO_VER}"
+    testImplementation "org.assertj:assertj-core:${TEST_ASSERTJ_VER}"
+}
+
+
+spotless {
+    scala {
+        // by default, all `.scala` and `.sc` files in the java sourcesets will be formatted
+
+        // version and configFile are both optional, however if version will be skipped some strange version will be used
+        scalafmt("3.0.0-RC1").configFile('.scalafmt.conf')
+
+        target project.fileTree(project.projectDir) {
+            include 'src/main/scala/**/*.scala'
+            include 'src/test/scala/**/*.scala'
+        }
+    }
+}
+
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = ["-feature",
+                                                "-deprecation",
+                                                "-unchecked"]
+}
