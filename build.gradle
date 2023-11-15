@@ -1,0 +1,14 @@
+// project dependencies
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        // scalatest plugin
+        classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.32"
+    }
+}

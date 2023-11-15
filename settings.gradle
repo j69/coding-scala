@@ -1,0 +1,4 @@
+rootProject.name = 'coding-scala'
+include 'scala3'
+include 'scala2'
+
